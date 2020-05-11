@@ -1,28 +1,52 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Seat msg="Welcome to Vue Cinema" />
+
+    <button id="bookSeats" onclick="bookSeats()">Book your seats</button>
+    <div class="displayerBoxes">
+      <table class="Displaytable">
+        <tr>
+          <th>Name</th>
+          <th>Number of Seats</th>
+          <th>Seats</th>
+        </tr>
+        <tr>
+          <td id="nameDisplay"></td>
+          <td id="NumberDisplay"></td>
+          <td id="seatsDisplay"></td>
+        </tr>
+      </table>
+    </div>
+    <div class="endBtns">
+      <button class="btn2" onclick="location.href = 'https://www.netflix.com/'">Go</button>
+      <button class="btn2" onclick="window.location.reload();">Make new booking</button>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Seat from "./components/Seat.vue";
+// import swal from "sweetalert";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
+    Seat
   }
-}
+};
 </script>
 
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #ffffff;
+  margin: 0px;
+  height: 100%;
+  background-image: url(./assets/cinemabg.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
 }
 </style>
