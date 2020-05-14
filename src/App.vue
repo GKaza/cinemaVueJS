@@ -1,10 +1,17 @@
 <template>
   <div id="app">
-    <Seat msg="Welcome to Vue Cinema" />
+    <h1>Welcome to Vue Cinema</h1>
 
     <table>
       <tr>
-        <td></td>
+        <Seat
+          v-for="seat in seats"
+          :key="seat.id"
+          :row="seat.row"
+          :number="seat.number"
+          :available="seat.available"
+          @click="checkSeat"
+        ></Seat>
       </tr>
     </table>
 
@@ -54,9 +61,9 @@ for (let r = 0; r < 10; r += 1) {
       row: rows[r],
       number: x,
       available: true
-    }
+    };
 
-    seats.set(obj["id"], obj)
+    seats.set(obj["id"], obj);
   }
 }
 
@@ -78,13 +85,53 @@ for (let i = 0; i < rows.length; i++) {
 
 //
 
-
 export default {
   name: "App",
   components: {
     Seat
   },
-  data() {
+  data: {
+    rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+    seats: [
+      {
+        id: "A1",
+        row: "A",
+        number: 1,
+        available: true
+      }
+    ]
+  },
+  methods: {
+    checkSeat(id) {
+      let row = seats.get(id).row;
+      let number = seats.get(id).number;
+      let firstSeat = number - (wantedSeats - 1);
+      let allSeatsAvailable = false;
+
+      if (seats.get(id).available) {
+        if (firstSeat < 1) {
+          firstSeat = 1;
+        }
+
+        while (allSeatsAvailable == false && firstSeat <= number) {
+          if (firstSeat + wantedSeats > 21) {
+            break;
+          }
+          let setAvailable = true;
+          for (let i = 0; i < wantedSeats; i += 1) {
+            let seatId = row + (firstSeat + i);
+            if (!seats.get(seatId).available) {
+              setAvailable = false;
+              break;
+            } else {
+              set[i] = seatId;
+            }
+          }
+          allSeatsAvailable = setAvailable;
+          firstSeat += 1;
+        }
+      }
+    }
   }
 };
 </script>
@@ -100,6 +147,5 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-
 }
 </style>

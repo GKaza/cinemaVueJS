@@ -1,14 +1,18 @@
-<template>
-  <div class="seatMap">
-    <h1>{{ msg }}</h1>
-  </div>
+<template id="seat-check">
+  <td>
+    <div>{{ key }}</div>
+  </td>
 </template>
 
 <script>
 export default {
   name: 'Seat',
-  props: {
-    msg: String
+  template: '#seat-check',
+  props: [ 'key', 'row', 'number', 'available'],
+  methods: {
+    select () {
+      this.$emit('click', this.key)
+    }
   }
 }
 </script>
@@ -17,3 +21,4 @@ export default {
 <style scoped>
 
 </style>
+ 
