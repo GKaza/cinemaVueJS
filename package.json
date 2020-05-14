@@ -33,7 +33,10 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "vue/no-unused-components": "warn",
+      "vue/no-unused-vars": "warn"
+    }
   },
   "browserslist": [
     "> 1%",
