@@ -2,18 +2,24 @@
   <div id="app">
     <h1>Welcome to Vue Cinema</h1>
 
-    <table>
-      <tr>
-        <Seat
-          v-for="seat in seats"
-          :key="seat.id"
-          :row="seat.row"
-          :number="seat.number"
-          :available="seat.available"
-          @click="checkSeat"
-        ></Seat>
-      </tr>
-    </table>
+    <form :key="inputForm" @submit="formInfo">
+      <label for="fname"></label>
+      <input type="text" id="fname" v-model="booking.name" />
+      <label for="wantedSeats"></label>
+      <input type="text" id="wantedSeats" v-model="booking.numberOfSeats" />
+      <input type="submit" />
+    </form>
+
+    <div :key="seatMap">
+      <Seat
+        v-for="seat in seats"
+        :key="seat.id"
+        :row="seat.row"
+        :number="seat.number"
+        :available="seat.available"
+        @seat-check="checkSeat($event)"
+      ></Seat>
+    </div>
 
     <button id="bookSeats" onclick="bookSeats()">Book your seats</button>
     <div class="displayerBoxes">
@@ -24,9 +30,9 @@
           <th>Seats</th>
         </tr>
         <tr>
-          <td id="nameDisplay"></td>
-          <td id="NumberDisplay"></td>
-          <td id="seatsDisplay"></td>
+          <td>{{ booking.name }}</td>
+          <td>{{ booking.numberOfSeats }}</td>
+          <td>{{ booking.bookedSeats }}</td>
         </tr>
       </table>
     </div>
@@ -40,48 +46,7 @@
 <script>
 import Seat from "./components/Seat.vue";
 // import swal from "sweetalert";
-
-const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-let seats = new Map();
-// let set = [];
-let reserved = JSON.parse(localStorage.getItem("reserved"));
-let max = new Map();
-let maxRow = 0;
-
 // localStorage.removeItem("reserved")
-
-for (let i = 0; i < rows.length; i += 1) {
-  max.set(rows[i], 20);
-}
-
-for (let r = 0; r < 10; r += 1) {
-  for (let x = 1; x < 21; x += 1) {
-    let obj = {
-      id: rows[r] + x,
-      row: rows[r],
-      number: x,
-      available: true
-    };
-
-    seats.set(obj["id"], obj);
-  }
-}
-
-if (reserved) {
-  for (let i = 0; i < reserved.length; i += 1) {
-    let sget = seats.get(reserved[i]);
-    sget.available = false;
-    max.set(sget.row, max.get(sget.row) - 1);
-  }
-} else {
-  reserved = [];
-}
-
-for (let i = 0; i < rows.length; i++) {
-  if (max.get(rows[i]) > maxRow) {
-    maxRow = max.get(rows[i]);
-  }
-}
 
 //
 
@@ -90,41 +55,79 @@ export default {
   components: {
     Seat
   },
-  data: {
-    rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-    seats: [
-      {
-        id: "A1",
-        row: "A",
-        number: 1,
-        available: true
-      }
-    ]
+  data() {
+    booking: {
+      name: "";
+      numberOfSeats: 0;
+      bookedSeats: [];
+    }
+    rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+    seats: new Map();
+    max: new Map();
+    maxRow: 0;
   },
   methods: {
+    formInfo() {},
+    bookSeats() {},
+    createSeats() {
+      let reserved = JSON.parse(localStorage.getItem("reserved"));
+
+      for (let i = 0; i < this.rows.length; i += 1) {
+        this.max.set(this.rows[i], 20);
+      }
+
+      for (let r = 0; r < 10; r += 1) {
+        for (let x = 1; x < 21; x += 1) {
+          let obj = {
+            id: this.rows[r] + x,
+            row: this.rows[r],
+            number: x,
+            available: true
+          };
+
+          this.seats.set(obj["id"], obj);
+        }
+      }
+
+      if (reserved) {
+        for (let i = 0; i < reserved.length; i += 1) {
+          let sget = this.seats.get(reserved[i]);
+          sget.available = false;
+          this.max.set(sget.row, this.max.get(sget.row) - 1);
+        }
+      } else {
+        reserved = [];
+      }
+
+      for (let i = 0; i < this.rows.length; i++) {
+        if (this.max.get(this.rows[i]) > this.maxRow) {
+          this.maxRow = this.max.get(this.rows[i]);
+        }
+      }
+    },
     checkSeat(id) {
-      let row = seats.get(id).row;
-      let number = seats.get(id).number;
-      let firstSeat = number - (wantedSeats - 1);
+      let row = this.seats.get(id).row;
+      let number = this.seats.get(id).number;
+      let firstSeat = number - (this.wantedSeats - 1);
       let allSeatsAvailable = false;
 
-      if (seats.get(id).available) {
+      if (this.seats.get(id).available) {
         if (firstSeat < 1) {
           firstSeat = 1;
         }
 
         while (allSeatsAvailable == false && firstSeat <= number) {
-          if (firstSeat + wantedSeats > 21) {
+          if (firstSeat + this.wantedSeats > 21) {
             break;
           }
           let setAvailable = true;
-          for (let i = 0; i < wantedSeats; i += 1) {
+          for (let i = 0; i < this.wantedSeats; i += 1) {
             let seatId = row + (firstSeat + i);
-            if (!seats.get(seatId).available) {
+            if (!this.seats.get(seatId).available) {
               setAvailable = false;
               break;
             } else {
-              set[i] = seatId;
+              this.set[i] = seatId;
             }
           }
           allSeatsAvailable = setAvailable;
