@@ -2,7 +2,7 @@
   <div id="app">
     <h1>Welcome to Vue Cinema</h1>
 
-    <form :key="inputForm" @submit="formInfo">
+    <form :key="inputForm" ref="inputForm" @submit="formInfo">
       <label for="fname"></label>
       <input type="text" id="fname" v-model="booking.name" />
       <label for="wantedSeats"></label>
@@ -10,10 +10,11 @@
       <input type="submit" />
     </form>
 
-    <div :key="seatMap">
+    <div :key="seatMap" ref="seatMap">
       <Seat
         v-for="seat in seats"
         :key="seat.id"
+        ref="seatCheckbox"
         :row="seat.row"
         :number="seat.number"
         :available="seat.available"
@@ -21,9 +22,15 @@
       ></Seat>
     </div>
 
-    <button id="bookSeats" onclick="bookSeats()">Book your seats</button>
-    <div class="displayerBoxes">
-      <table class="Displaytable">
+    <button
+      :key="bookButton"
+      ref="bookButton"
+      v-if="allSeatsAvailable"
+      @click="bookSeats"
+    >Book your seats</button>
+
+    <div :key="finalDisplay" ref="finalDisplay">
+      <table>
         <tr>
           <th>Name</th>
           <th>Number of Seats</th>
@@ -35,17 +42,17 @@
           <td>{{ booking.bookedSeats }}</td>
         </tr>
       </table>
-    </div>
-    <div class="endBtns">
-      <button class="btn2" onclick="location.href = 'https://www.netflix.com/'">Go</button>
-      <button class="btn2" onclick="window.location.reload();">Make new booking</button>
+      <div :key="endButtons">
+        <button @click="location.href = 'https://www.netflix.com/'">Go</button>
+        <button @click="window.location.reload();">Make new booking</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import Seat from "./components/Seat.vue";
-// import swal from "sweetalert";
+import swal from "sweetalert";
 // localStorage.removeItem("reserved")
 
 //
@@ -65,6 +72,8 @@ export default {
     seats: new Map();
     max: new Map();
     maxRow: 0;
+    allSeatsAvailable: false;
+    set: [];
   },
   methods: {
     formInfo() {},
@@ -90,7 +99,7 @@ export default {
       }
 
       if (reserved) {
-        for (let i = 0; i < reserved.length; i += 1) {
+        for (let i = 0; i < reserved.length; i++) {
           let sget = this.seats.get(reserved[i]);
           sget.available = false;
           this.max.set(sget.row, this.max.get(sget.row) - 1);
@@ -108,20 +117,20 @@ export default {
     checkSeat(id) {
       let row = this.seats.get(id).row;
       let number = this.seats.get(id).number;
-      let firstSeat = number - (this.wantedSeats - 1);
-      let allSeatsAvailable = false;
+      let firstSeat = number - (this.booking.numberOfSeats - 1);
+      this.allSeatsAvailable = false;
 
       if (this.seats.get(id).available) {
         if (firstSeat < 1) {
           firstSeat = 1;
         }
 
-        while (allSeatsAvailable == false && firstSeat <= number) {
-          if (firstSeat + this.wantedSeats > 21) {
+        while (this.allSeatsAvailable == false && firstSeat <= number) {
+          if (firstSeat + this.booking.numberOfSeats > 21) {
             break;
           }
           let setAvailable = true;
-          for (let i = 0; i < this.wantedSeats; i += 1) {
+          for (let i = 0; i < this.booking.numberOfSeats; i += 1) {
             let seatId = row + (firstSeat + i);
             if (!this.seats.get(seatId).available) {
               setAvailable = false;
@@ -130,9 +139,26 @@ export default {
               this.set[i] = seatId;
             }
           }
-          allSeatsAvailable = setAvailable;
+          this.allSeatsAvailable = setAvailable;
           firstSeat += 1;
         }
+        if (this.allSeatsAvailable == true) {
+          for (let i = 0; i < this.set.length; i += 1) {
+            // this.$refs.seat[i].prop("checked", true);
+          }
+        } else {
+          swal(
+            "Seat selection unavailable!",
+            "Not enough space to fit you and your friends.",
+            "warning"
+          );
+        }
+      } else {
+        swal(
+          "Seat already reserved!",
+          "Make sure the seat you are trying to select is available.",
+          "error"
+        );
       }
     }
   }
