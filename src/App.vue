@@ -2,7 +2,7 @@
   <div id="app">
     <h1>Welcome to Vue Cinema</h1>
 
-    <form :key="inputForm" ref="inputForm" @submit="formInfo">
+    <form :key="inputForm" @submit="formInfo">
       <label for="fname"></label>
       <input type="text" id="fname" v-model="booking.name" />
       <label for="wantedSeats"></label>
@@ -14,7 +14,7 @@
       <Seat
         v-for="seat in seats"
         :key="seat.id"
-        ref="seatCheckbox"
+        :class="{ seatTaken: !seat.available }"
         :row="seat.row"
         :number="seat.number"
         :available="seat.available"
@@ -22,14 +22,9 @@
       ></Seat>
     </div>
 
-    <button
-      :key="bookButton"
-      ref="bookButton"
-      v-if="allSeatsAvailable"
-      @click="bookSeats"
-    >Book your seats</button>
+    <button :key="bookButton" v-if="allSeatsAvailable" @click="bookSeats">Book your seats</button>
 
-    <div :key="finalDisplay" ref="finalDisplay">
+    <div :key="finalDisplay">
       <table>
         <tr>
           <th>Name</th>
