@@ -14,7 +14,7 @@
       <Seat
         v-for="seat in seats"
         :key="seat.id"
-        :class="{ seatTaken: !seat.available }"
+        :class="{ seatTaken: seat.available }"
         :row="seat.row"
         :number="seat.number"
         :available="seat.available"
