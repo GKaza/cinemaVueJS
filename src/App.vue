@@ -2,7 +2,7 @@
   <div id="app">
     <h1>Welcome to Vue Cinema</h1>
 
-    <form :key="inputForm" @submit="formInfo">
+    <form @submit="formInfo">
       <label for="fname"></label>
       <input type="text" id="fname" v-model="booking.name" />
       <label for="wantedSeats"></label>
@@ -10,7 +10,7 @@
       <input type="submit" />
     </form>
 
-    <div :key="seatMap" ref="seatMap">
+    <div ref="seatMap">
       <Seat
         v-for="seat in seats"
         :key="seat.id"
@@ -22,9 +22,9 @@
       ></Seat>
     </div>
 
-    <button :key="bookButton" v-if="allSeatsAvailable" @click="bookSeats">Book your seats</button>
+    <button v-if="allSeatsAvailable" @click="bookSeats">Book your seats></button>
 
-    <div :key="finalDisplay">
+    <div>
       <table>
         <tr>
           <th>Name</th>
@@ -37,7 +37,7 @@
           <td>{{ booking.bookedSeats }}</td>
         </tr>
       </table>
-      <div :key="endButtons">
+      <div>
         <button @click="location.href = 'https://www.netflix.com/'">Go</button>
         <button @click="window.location.reload();">Make new booking</button>
       </div>
@@ -58,21 +58,22 @@ export default {
     Seat
   },
   data() {
-    booking: {
-      name: "";
-      numberOfSeats: 0;
-      bookedSeats: [];
-    }
-    rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-    seats: new Map();
-    max: new Map();
-    maxRow: 0;
-    allSeatsAvailable: false;
-    set: [];
+    return {
+      booking: {
+        name: "",
+        numberOfSeats: 0,
+        bookedSeats: []
+      },
+      rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+      max: new Map(),
+      maxRow: 0,
+      allSeatsAvailable: false,
+      set: []
+    };
   },
   methods: {
-    formInfo() {},
-    bookSeats() {},
+    // formInfo() {},
+    // bookSeats() {},
     createSeats() {
       let reserved = JSON.parse(localStorage.getItem("reserved"));
 
