@@ -3,11 +3,11 @@
     <h1>Welcome to Vue Cinema</h1>
 
     <form @submit="formInfo">
-      <label for="fname"></label>
+      <label for="fname">Name:</label>
       <input type="text" id="fname" v-model="booking.name" />
-      <label for="wantedSeats"></label>
+      <label for="wantedSeats">Number of Seats:</label>
       <input type="text" id="wantedSeats" v-model="booking.numberOfSeats" />
-      <input type="submit" class="btn" />
+      <input type="submit" v-if="booking.numberOfSeats" class="btn" />
     </form>
 
     <div>
@@ -59,7 +59,7 @@ export default {
     return {
       booking: {
         name: "",
-        numberOfSeats: 0,
+        numberOfSeats: "",
         bookedSeats: []
       },
       rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
