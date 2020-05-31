@@ -7,14 +7,14 @@
       <input type="text" id="fname" v-model="booking.name" />
       <label for="wantedSeats"></label>
       <input type="text" id="wantedSeats" v-model="booking.numberOfSeats" />
-      <input type="submit" />
+      <input type="submit" class="btn" />
     </form>
 
-    <div ref="seatMap">
+    <div>
       <Seat
         v-for="seat in seats"
         :key="seat.id"
-        :class="{ seatTaken: seat.available }"
+        :class="{ seatTaken: !seat.available }"
         :row="seat.row"
         :number="seat.number"
         :available="seat.available"
@@ -38,8 +38,8 @@
         </tr>
       </table>
       <div>
-        <button @click="location.href = 'https://www.netflix.com/'">Go</button>
-        <button @click="window.location.reload();">Make new booking</button>
+        <button class="btn2" @click="location.href = 'https://www.netflix.com/'">Go</button>
+        <button class="btn2" @click="window.location.reload();">Make new booking</button>
       </div>
     </div>
   </div>
@@ -49,8 +49,6 @@
 import Seat from "./components/Seat.vue";
 import swal from "sweetalert";
 // localStorage.removeItem("reserved")
-
-//
 
 export default {
   name: "App",
@@ -157,6 +155,9 @@ export default {
         );
       }
     }
+  },
+  created: function() {
+    this.createSeats();
   }
 };
 </script>
@@ -172,5 +173,32 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.btn {
+  color: rgb(255, 255, 255);
+  background-color: #4b9cd3;
+  padding: 1%;
+  border-radius: 30px;
+  border: 0px;
+  margin: 1px;
+}
+.btn:hover {
+  background-color: rgb(73, 150, 201);
+}
+.btn2 {
+  color: rgb(255, 255, 255);
+  background-color: #6bd600;
+  padding: 1%;
+  border-radius: 30px;
+  border: 0px;
+  margin: 1px;
+}
+.btn2:hover {
+  background-color: rgb(113, 226, 0);
+}
+button:disabled {
+  cursor: not-allowed;
+  color: rgb(190, 190, 190);
 }
 </style>
