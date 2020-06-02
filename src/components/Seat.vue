@@ -6,7 +6,7 @@
 export default {
   name: "Seat",
   template: "#seat-check",
-  props: ["key", "row", "number", "available"],
+  props: ["id", "row", "number", "available"],
   methods: {
     select() {
       this.$emit("seat-check", this.key);

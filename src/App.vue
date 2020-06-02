@@ -7,14 +7,15 @@
       <input type="text" id="fname" v-model="booking.name" />
       <label for="wantedSeats">Number of Seats:</label>
       <input type="text" id="wantedSeats" v-model="booking.numberOfSeats" />
-      <input type="submit" v-if="booking.numberOfSeats" class="btn" />
+      <input type="submit" class="btn" />
     </form>
 
     <div>
       <Seat
         v-for="seat in seats"
         :key="seat.id"
-        :class="{ seatTaken: !seat.available }"
+        :id="seat.id"
+        :class="{ seatTaken: seat.available }"
         :row="seat.row"
         :number="seat.number"
         :available="seat.available"
@@ -63,6 +64,7 @@ export default {
         bookedSeats: []
       },
       rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+      seats: new Map(),
       max: new Map(),
       maxRow: 0,
       allSeatsAvailable: false,
@@ -158,6 +160,7 @@ export default {
   },
   created: function() {
     this.createSeats();
+    console.log(this.seats);
   }
 };
 </script>
