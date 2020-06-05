@@ -1,5 +1,5 @@
 <template id="seat-check">
-  <div @click="select">{{ key }}</div>
+  <div @click="select">{{ row }}</div>
 </template>
 
 <script>
@@ -9,7 +9,7 @@ export default {
   props: ["id", "row", "number", "available"],
   methods: {
     select() {
-      this.$emit("seat-check", this.key);
+      this.$emit("seat-check", this.id);
     }
   }
 };
@@ -18,4 +18,3 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>
- 

@@ -26,7 +26,7 @@
     <button v-if="allSeatsAvailable" @click="bookSeats">Book your seats></button>
 
     <div>
-      <table>
+      <table id="bookingTable">
         <tr>
           <th>Name</th>
           <th>Number of Seats</th>
@@ -176,6 +176,11 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+#bookingTable {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .btn {
