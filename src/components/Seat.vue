@@ -1,12 +1,12 @@
 <template id="seat-check">
-  <div @click="select">{{ row }}</div>
+  <div @click="select">{{ id }}</div>
 </template>
 
 <script>
 export default {
   name: "Seat",
   template: "#seat-check",
-  props: ["id", "row", "number", "available"],
+  props: ['id', 'row', 'number', 'available'],
   methods: {
     select() {
       this.$emit("seat-check", this.id);

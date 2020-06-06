@@ -2,7 +2,7 @@
   <div id="app">
     <h1>Welcome to Vue Cinema</h1>
 
-    <form @submit="formInfo">
+    <form @submit.prevent="formInfo">
       <label for="fname">Name:</label>
       <input type="text" id="fname" v-model="booking.name" />
       <label for="wantedSeats">Number of Seats:</label>
