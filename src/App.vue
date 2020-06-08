@@ -12,7 +12,7 @@
 
     <div>
       <Seat
-        v-for="seat in seats"
+        v-for="seat in seatsArray"
         :key="seat.id"
         :id="seat.id"
         :class="{ seatTaken: seat.available }"
@@ -64,9 +64,22 @@ export default {
         bookedSeats: []
       },
       rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-      seats: new Map(),
-      max: new Map(),
-      maxRow: 0,
+      seats: {
+        A1: {
+          id: "A1",
+          row: "A",
+          number: 1,
+          available: true
+        },
+        A2: {
+          id: "A2",
+          row: "A",
+          number: 2,
+          available: true
+        }
+      },
+      max: {},
+      // maxRow: 0,
       allSeatsAvailable: false,
       set: []
     };
@@ -78,7 +91,7 @@ export default {
       let reserved = JSON.parse(localStorage.getItem("reserved"));
 
       for (let i = 0; i < this.rows.length; i += 1) {
-        this.max.set(this.rows[i], 20);
+        this.max.rows[i] = 20;
       }
 
       for (let r = 0; r < 10; r += 1) {
@@ -158,9 +171,14 @@ export default {
       }
     }
   },
+  computed: {
+    seatsArray() {
+      return Object.values(this.seats);
+    }
+  },
   created: function() {
-    this.createSeats();
-    console.log(this.seats);
+    // this.createSeats();
+    // console.log(this.seatsArray());
   }
 };
 </script>
