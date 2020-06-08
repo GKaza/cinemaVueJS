@@ -15,7 +15,7 @@
         v-for="seat in seatsArray"
         :key="seat.id"
         :id="seat.id"
-        :class="{ seatTaken: seat.available }"
+        :class="{ seatTaken: !seat.available }"
         :row="seat.row"
         :number="seat.number"
         :available="seat.available"
@@ -64,36 +64,23 @@ export default {
         bookedSeats: []
       },
       rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-      seats: {
-        A1: {
-          id: "A1",
-          row: "A",
-          number: 1,
-          available: true
-        },
-        A2: {
-          id: "A2",
-          row: "A",
-          number: 2,
-          available: true
-        }
-      },
+      seats: {},
       max: {},
-      // maxRow: 0,
       allSeatsAvailable: false,
-      set: []
+      set: [],
+      reserved: JSON.parse(localStorage.getItem("reserved"))
     };
   },
   methods: {
     // formInfo() {},
     // bookSeats() {},
     createSeats() {
-      let reserved = JSON.parse(localStorage.getItem("reserved"));
-
+      // set max of all rows to 20
       for (let i = 0; i < this.rows.length; i += 1) {
-        this.max.rows[i] = 20;
+        this.max[this.rows[i]] = 20;
       }
 
+      // create an object for each seat and pass it as property value of seats
       for (let r = 0; r < 10; r += 1) {
         for (let x = 1; x < 21; x += 1) {
           let obj = {
@@ -102,34 +89,28 @@ export default {
             number: x,
             available: true
           };
-
-          this.seats.set(obj["id"], obj);
+          this.seats[obj.id] = obj;
         }
       }
 
-      if (reserved) {
-        for (let i = 0; i < reserved.length; i++) {
-          let sget = this.seats.get(reserved[i]);
+      // make unavailable all seats that have already been reserved
+      if (this.reserved) {
+        for (let i = 0; i < this.reserved.length; i++) {
+          let sget = this.seats.reserved[i];
           sget.available = false;
-          this.max.set(sget.row, this.max.get(sget.row) - 1);
+          this.max[sget.row] = this.max[sget.row] - 1;
         }
       } else {
-        reserved = [];
-      }
-
-      for (let i = 0; i < this.rows.length; i++) {
-        if (this.max.get(this.rows[i]) > this.maxRow) {
-          this.maxRow = this.max.get(this.rows[i]);
-        }
+        this.reserved = [];
       }
     },
     checkSeat(id) {
-      let row = this.seats.get(id).row;
-      let number = this.seats.get(id).number;
+      let row = this.seats[id].row;
+      let number = this.seats[id].number;
       let firstSeat = number - (this.booking.numberOfSeats - 1);
       this.allSeatsAvailable = false;
 
-      if (this.seats.get(id).available) {
+      if (this.seats[id].available) {
         if (firstSeat < 1) {
           firstSeat = 1;
         }
@@ -141,7 +122,7 @@ export default {
           let setAvailable = true;
           for (let i = 0; i < this.booking.numberOfSeats; i += 1) {
             let seatId = row + (firstSeat + i);
-            if (!this.seats.get(seatId).available) {
+            if (!this.seats[seatId].available) {
               setAvailable = false;
               break;
             } else {
@@ -151,9 +132,9 @@ export default {
           this.allSeatsAvailable = setAvailable;
           firstSeat += 1;
         }
-        if (this.allSeatsAvailable == true) {
+        if (this.allSeatsAvailable) {
           for (let i = 0; i < this.set.length; i += 1) {
-            // this.$refs.seat[i].prop("checked", true);
+            this.seats[this.set[i]].checked = true;
           }
         } else {
           swal(
@@ -177,8 +158,9 @@ export default {
     }
   },
   created: function() {
-    // this.createSeats();
-    // console.log(this.seatsArray());
+    this.createSeats();
+    console.log(this.seatsArray);
+    console.log(this.max);
   }
 };
 </script>
@@ -194,6 +176,10 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.seatTaken {
+  cursor: not-allowed;
 }
 
 #bookingTable {
