@@ -2,12 +2,22 @@
   <div id="app">
     <h1>Welcome to Vue Cinema</h1>
 
-    <form @submit.prevent="formInfo">
-      <label for="fname">Name:</label>
-      <input type="text" id="fname" v-model="booking.name" />
-      <label for="wantedSeats">Number of Seats:</label>
-      <input type="text" id="wantedSeats" v-model="booking.numberOfSeats" />
-      <input type="submit" class="btn" />
+    <form @submit.prevent="formInfo" class="form-container" v-if="!this.formSubmitted">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input id="name" v-model="booking.name" />
+        <p v-if="!this.nameIsValid" class="error-message">Please input a valid name.</p>
+      </div>
+      <div class="form-group">
+        <label for="wantedSeats">Number of Seats:</label>
+        <input id="wantedSeats" v-model.number="booking.numberOfSeats" />
+        <p
+          v-if="!this.numberIsValid"
+          class="error-message"
+        >Please pick the ammount of wanted seats between 1 and 20.</p>
+      </div>
+
+      <input :disabled="!this.formIsValid" type="submit" class="btn" />
     </form>
 
     <div>
@@ -59,20 +69,23 @@ export default {
   data() {
     return {
       booking: {
-        name: "",
-        numberOfSeats: "",
+        name: null,
+        numberOfSeats: null,
         bookedSeats: []
       },
       rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
       seats: {},
       max: {},
+      formSubmitted: false,
       allSeatsAvailable: false,
       set: [],
       reserved: JSON.parse(localStorage.getItem("reserved"))
     };
   },
   methods: {
-    // formInfo() {},
+    formInfo() {
+      this.formSubmitted = true;
+    },
     // bookSeats() {},
     createSeats() {
       // set max of all rows to 20
@@ -132,11 +145,7 @@ export default {
           this.allSeatsAvailable = setAvailable;
           firstSeat += 1;
         }
-        if (this.allSeatsAvailable) {
-          for (let i = 0; i < this.set.length; i += 1) {
-            this.seats[this.set[i]].checked = true;
-          }
-        } else {
+        if (!this.allSeatsAvailable) {
           swal(
             "Seat selection unavailable!",
             "Not enough space to fit you and your friends.",
@@ -160,12 +169,24 @@ export default {
   computed: {
     seatsArray() {
       return Object.values(this.seats);
+    },
+    nameIsValid() {
+      return !!this.booking.name;
+    },
+    numberIsValid() {
+      return (
+        typeof this.booking.numberOfSeats === "number" &&
+        this.booking.numberOfSeats > 0 &&
+        this.booking.numberOfSeats <= 21
+      );
+    },
+    formIsValid() {
+      return this.nameIsValid && this.numberIsValid;
     }
   },
   created: function() {
     this.createSeats();
     console.log(this.seatsArray);
-    console.log(this.max);
   }
 };
 </script>
@@ -185,6 +206,21 @@ export default {
 
 .seatTaken {
   cursor: not-allowed;
+}
+
+.form-container {
+  width: 80%;
+  margin: auto;
+}
+
+.form-group {
+  float: left;
+  width: 50%;
+}
+
+.error-message {
+  color: #ff0000;
+  font-size: 0.65em;
 }
 
 #bookingTable {
@@ -214,7 +250,8 @@ export default {
 .btn2:hover {
   background-color: rgb(113, 226, 0);
 }
-button:disabled {
+
+:disabled {
   cursor: not-allowed;
   color: rgb(190, 190, 190);
 }
