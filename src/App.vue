@@ -27,17 +27,15 @@
       </tr>
       <tr v-for="row in rows" :key="row">
         <td>{{ row }}</td>
-        <Seat
-          v-for="seat in seatsInRow(row)"
-          :key="seat.id"
-          :id="seat.id"
-          class="seat"
-          :class="{ seatTaken: !seat.available, seatSelected: selected(seat.id) }"
-          :row="seat.row"
-          :number="seat.number"
-          :available="seat.available"
-          @seat-check="checkSeat($event)"
-        ></Seat>
+        <td v-for="seat in seatsInRow(row)" :key="seat.id">
+          <Seat
+            :id="seat.id"
+            :row="seat.row"
+            :number="seat.number"
+            :class="{ seatTaken: !seat.available, seatSelected: selected(seat.id) }"
+            @seat-check="checkSeat($event)"
+          ></Seat>
+        </td>
       </tr>
     </table>
 
@@ -169,8 +167,10 @@ export default {
       }
     },
     selected(id) {
-      if (this.allSeatsAvailable) {
-        return this.set.find(seat => seat === id);
+      if (this.allSeatsAvailable && this.set.find(seat => seat === id)) {
+        return true;
+      } else {
+        return false;
       }
     },
     seatsInRow(row) {
@@ -197,7 +197,6 @@ export default {
   },
   created: function() {
     this.createSeats();
-    console.log(this.seatsInRow("A"));
   }
 };
 </script>
@@ -223,8 +222,35 @@ export default {
   min-width: 20px;
 }
 
-.seatTaken {
+.checkbox {
+  display: inline-flex;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox > input {
+  height: 25px;
+  width: 25px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  outline: none;
+  transition-duration: 0.3s;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.seatTaken > input {
+  background-color: #ff0000;
   cursor: not-allowed;
+}
+
+.seatSelected > input {
+  background-color: rgb(113, 226, 0);
+  border: 2px solid #555555;
 }
 
 .form-container {

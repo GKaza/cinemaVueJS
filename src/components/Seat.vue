@@ -1,9 +1,7 @@
 <template id="seat-check">
-  <td>
-    <label class="checkbox" @click="select">
-      <input type="checkbox" />
-    </label>
-  </td>
+  <label class="checkbox" @click="select">
+    <input type="checkbox" />
+  </label>
 </template>
 
 <script>
