@@ -20,20 +20,28 @@
       <input :disabled="!this.formIsValid" type="submit" class="btn" />
     </form>
 
-    <div>
-      <Seat
-        v-for="seat in seatsArray"
-        :key="seat.id"
-        :id="seat.id"
-        :class="{ seatTaken: !seat.available, seatSelected: selected(seat.id) }"
-        :row="seat.row"
-        :number="seat.number"
-        :available="seat.available"
-        @seat-check="checkSeat($event)"
-      ></Seat>
-    </div>
+    <table id="seatMap">
+      <tr>
+        <td></td>
+        <td v-for="seat in seatsInRow('A')" class="tableHeader" :key="seat.number">{{ seat.number }}</td>
+      </tr>
+      <tr v-for="row in rows" :key="row">
+        <td>{{ row }}</td>
+        <Seat
+          v-for="seat in seatsInRow(row)"
+          :key="seat.id"
+          :id="seat.id"
+          class="seat"
+          :class="{ seatTaken: !seat.available, seatSelected: selected(seat.id) }"
+          :row="seat.row"
+          :number="seat.number"
+          :available="seat.available"
+          @seat-check="checkSeat($event)"
+        ></Seat>
+      </tr>
+    </table>
 
-    <button v-if="allSeatsAvailable" @click="bookSeats">Book your seats></button>
+    <button v-if="allSeatsAvailable" class="btn" @click="bookSeats">Book your seats</button>
 
     <div>
       <table id="bookingTable">
@@ -164,6 +172,9 @@ export default {
       if (this.allSeatsAvailable) {
         return this.set.find(seat => seat === id);
       }
+    },
+    seatsInRow(row) {
+      return this.seatsArray.filter(seat => seat.row === row);
     }
   },
   computed: {
@@ -186,7 +197,7 @@ export default {
   },
   created: function() {
     this.createSeats();
-    console.log(this.seatsArray);
+    console.log(this.seatsInRow("A"));
   }
 };
 </script>
@@ -204,12 +215,20 @@ export default {
   background-size: cover;
 }
 
+#seatMap {
+  margin: auto;
+}
+
+.tableHeader {
+  min-width: 20px;
+}
+
 .seatTaken {
   cursor: not-allowed;
 }
 
 .form-container {
-  width: 80%;
+  width: 70%;
   margin: auto;
 }
 
