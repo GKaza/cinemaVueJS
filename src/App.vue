@@ -15,7 +15,7 @@
         v-for="seat in seatsArray"
         :key="seat.id"
         :id="seat.id"
-        :class="{ seatTaken: !seat.available }"
+        :class="{ seatTaken: !seat.available, seatSelected: selected(seat.id) }"
         :row="seat.row"
         :number="seat.number"
         :available="seat.available"
@@ -149,6 +149,11 @@ export default {
           "Make sure the seat you are trying to select is available.",
           "error"
         );
+      }
+    },
+    selected(id) {
+      if (this.allSeatsAvailable) {
+        return this.set.find(seat => seat === id);
       }
     }
   },
