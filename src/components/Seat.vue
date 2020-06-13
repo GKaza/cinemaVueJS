@@ -49,4 +49,8 @@ export default {
   background-color: rgb(113, 226, 0);
   border: 2px solid #555555;
 }
+
+.seatDisabled > input {
+  cursor: not-allowed;
+}
 </style>

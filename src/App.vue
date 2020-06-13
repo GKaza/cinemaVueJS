@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1 id="header">Welcome to Vue Cinema</h1>
+    <h1 id="header">Welcome to Vue Cinema🎬</h1>
 
     <form @submit.prevent="formInfo" class="form-container" v-if="!this.formSubmitted">
       <div class="form-group">
@@ -32,16 +32,16 @@
             :id="seat.id"
             :row="seat.row"
             :number="seat.number"
-            :class="{ seatTaken: !seat.available, seatSelected: selected(seat.id) }"
+            :class="{ seatTaken: !seat.available, seatSelected: selected(seat.id), seatDisabled: bookingDone }"
             @seat-check="checkSeat($event)"
           ></Seat>
         </td>
       </tr>
     </table>
 
-    <button v-if="this.allSeatsAvailable" class="btn" @click="bookSeats">Book your seats</button>
+    <button v-if="this.showBookButton" class="btn" @click="bookSeats">Book your seats</button>
 
-    <div>
+    <div v-if="bookingDone">
       <table id="bookingTable">
         <tr>
           <th>Name</th>
@@ -56,8 +56,12 @@
       </table>
       <div>
         <button class="btn2" @click="go()">Go</button>
-        <button class="btn2" @click="reload()">Make new booking</button>
+        <button class="btn2" @click="reload()">Make a new booking</button>
       </div>
+    </div>
+
+    <div id="delete">
+      <button v-if="this.reserved.length" class="btn3" @click="deleteBookings()">Delete all bookings</button>
     </div>
   </div>
 </template>
@@ -65,7 +69,6 @@
 <script>
 import Seat from "./components/Seat.vue";
 import swal from "sweetalert";
-// localStorage.removeItem("reserved")
 
 export default {
   name: "App",
@@ -95,13 +98,15 @@ export default {
     reload() {
       window.location.reload();
     },
+    deleteBookings() {
+      localStorage.removeItem("reserved");
+      this.reload();
+    },
     formInfo() {
       this.formSubmitted = true;
     },
     bookSeats() {
       if (this.set.length) {
-        // disable seatmap
-
         this.booking.bookedSeats = this.set;
         for (let i = 0; i < this.set.length; i += 1) {
           this.seats[this.set[i]].available = false;
@@ -112,14 +117,14 @@ export default {
           JSON.stringify(this.reserved.concat(this.set))
         );
         swal(
-          "Successful Booking" + this.booking.name + "!",
+          "Successful Booking " + this.booking.name + "!",
           "Your seats are " + this.bookedSeatsText + ".",
           "success"
         );
       } else {
         swal(
           "Cannot proceed with the booking!",
-          "Please pick your seat(s).",
+          "Please pick your seat.",
           "error"
         );
       }
@@ -160,40 +165,52 @@ export default {
       let firstSeat = number - (this.booking.numberOfSeats - 1);
       this.allSeatsAvailable = false;
 
-      if (this.seats[id].available) {
-        if (firstSeat < 1) {
-          firstSeat = 1;
-        }
-
-        while (this.allSeatsAvailable == false && firstSeat <= number) {
-          if (firstSeat + this.booking.numberOfSeats > 21) {
-            break;
-          }
-          let setAvailable = true;
-          for (let i = 0; i < this.booking.numberOfSeats; i += 1) {
-            let seatId = row + (firstSeat + i);
-            if (!this.seats[seatId].available) {
-              setAvailable = false;
-              break;
-            } else {
-              this.set[i] = seatId;
+      if (this.formSubmitted) {
+        if (!this.booking.bookedSeats.length) {
+          if (this.seats[id].available) {
+            if (firstSeat < 1) {
+              firstSeat = 1;
             }
+
+            while (this.allSeatsAvailable == false && firstSeat <= number) {
+              if (firstSeat + this.booking.numberOfSeats > 21) {
+                break;
+              }
+              let setAvailable = true;
+              for (let i = 0; i < this.booking.numberOfSeats; i += 1) {
+                let seatId = row + (firstSeat + i);
+                if (!this.seats[seatId].available) {
+                  setAvailable = false;
+                  break;
+                } else {
+                  this.set[i] = seatId;
+                }
+              }
+              this.allSeatsAvailable = setAvailable;
+              firstSeat += 1;
+            }
+            if (!this.allSeatsAvailable) {
+              swal(
+                "Seat selection unavailable!",
+                "Not enough space to fit you and your friends.",
+                "warning"
+              );
+            }
+          } else {
+            swal(
+              "Seat already reserved!",
+              "Make sure the seat you are trying to select is available.",
+              "error"
+            );
           }
-          this.allSeatsAvailable = setAvailable;
-          firstSeat += 1;
-        }
-        if (!this.allSeatsAvailable) {
-          swal(
-            "Seat selection unavailable!",
-            "Not enough space to fit you and your friends.",
-            "warning"
-          );
+        } else {
+          swal("Your booking has already been made!", "", "warning");
         }
       } else {
         swal(
-          "Seat already reserved!",
-          "Make sure the seat you are trying to select is available.",
-          "error"
+          "Please submit the form first!",
+          "Make sure you give us your name and ammount of wanted seats.",
+          "warning"
         );
       }
     },
@@ -227,11 +244,25 @@ export default {
     },
     bookedSeatsText() {
       return this.booking.bookedSeats.join(", ");
+    },
+    bookingDone() {
+      if (this.booking.bookedSeats.length) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    showBookButton() {
+      if (this.allSeatsAvailable && !this.bookingDone) {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   created: function() {
     this.createSeats();
-    console.log(this.seats);
+    console.log(this.reserved);
   }
 };
 </script>
@@ -287,6 +318,7 @@ export default {
 .btn {
   color: rgb(255, 255, 255);
   background-color: #4b9cd3;
+  cursor: pointer;
   padding: 1%;
   border-radius: 30px;
   border: 0px;
@@ -300,14 +332,35 @@ export default {
 .btn2 {
   color: rgb(255, 255, 255);
   background-color: #6bd600;
+  cursor: pointer;
   padding: 1%;
   border-radius: 30px;
   border: 0px;
-  margin: 1px;
+  margin: 1px 10px;
 }
 
 .btn2:hover {
   background-color: rgb(113, 226, 0);
+}
+
+#delete {
+  margin-top: 120px;
+}
+
+.btn3 {
+  color: rgb(255, 255, 255);
+  background-color: #ff0000;
+  border-radius: 30px;
+  padding: 1%;
+  border: 0px;
+  height: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.btn3:hover {
+  background-color: #e70000;
 }
 
 :disabled {
