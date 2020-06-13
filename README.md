@@ -1,5 +1,8 @@
 # cinemaBooking
 
+Basic functionality preview:
+<div style="width:260px;max-width:100%;"><div style="height:0;padding-bottom:77.69%;position:relative;"><iframe width="260" height="202" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameBorder="0" src="https://imgflip.com/embed/451a1f"></iframe></div><p><a href="https://imgflip.com/gif/451a1f">via Imgflip</a></p></div>
+<a href="https://imgflip.com/gif/451a1f"><img src="https://imgflip.com/gif/451a1f.gif"></a>
 # Seat Booking application
 
 The seats are displayed visually so users understand where they will be watching from when picking seats. We will call this the seat map.
@@ -29,6 +32,6 @@ Each seat has its own unique id which is a letter and a number. The letters repr
 
 reserved → red
 
-available → light grey
+available → white
 
 selected → green/active color
