@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Welcome to Vue Cinema</h1>
+    <h1 id="header">Welcome to Vue Cinema</h1>
 
     <form @submit.prevent="formInfo" class="form-container" v-if="!this.formSubmitted">
       <div class="form-group">
@@ -39,7 +39,7 @@
       </tr>
     </table>
 
-    <button v-if="allSeatsAvailable" class="btn" @click="bookSeats">Book your seats</button>
+    <button v-if="this.allSeatsAvailable" class="btn" @click="bookSeats">Book your seats</button>
 
     <div>
       <table id="bookingTable">
@@ -51,12 +51,12 @@
         <tr>
           <td>{{ booking.name }}</td>
           <td>{{ booking.numberOfSeats }}</td>
-          <td>{{ booking.bookedSeats }}</td>
+          <td>{{ bookedSeatsText }}</td>
         </tr>
       </table>
       <div>
-        <button class="btn2" @click="location.href = 'https://www.netflix.com/'">Go</button>
-        <button class="btn2" @click="window.location.reload();">Make new booking</button>
+        <button class="btn2" @click="go()">Go</button>
+        <button class="btn2" @click="reload()">Make new booking</button>
       </div>
     </div>
   </div>
@@ -89,10 +89,41 @@ export default {
     };
   },
   methods: {
+    go() {
+      window.location.href = "https://www.netflix.com/";
+    },
+    reload() {
+      window.location.reload();
+    },
     formInfo() {
       this.formSubmitted = true;
     },
-    // bookSeats() {},
+    bookSeats() {
+      if (this.set.length) {
+        // disable seatmap
+
+        this.booking.bookedSeats = this.set;
+        for (let i = 0; i < this.set.length; i += 1) {
+          this.seats[this.set[i]].available = false;
+        }
+
+        localStorage.setItem(
+          "reserved",
+          JSON.stringify(this.reserved.concat(this.set))
+        );
+        swal(
+          "Successful Booking" + this.booking.name + "!",
+          "Your seats are " + this.bookedSeatsText + ".",
+          "success"
+        );
+      } else {
+        swal(
+          "Cannot proceed with the booking!",
+          "Please pick your seat(s).",
+          "error"
+        );
+      }
+    },
     createSeats() {
       // set max of all rows to 20
       for (let i = 0; i < this.rows.length; i += 1) {
@@ -115,7 +146,7 @@ export default {
       // make unavailable all seats that have already been reserved
       if (this.reserved) {
         for (let i = 0; i < this.reserved.length; i++) {
-          let sget = this.seats.reserved[i];
+          let sget = this.seats[this.reserved[i]];
           sget.available = false;
           this.max[sget.row] = this.max[sget.row] - 1;
         }
@@ -193,10 +224,14 @@ export default {
     },
     formIsValid() {
       return this.nameIsValid && this.numberIsValid;
+    },
+    bookedSeatsText() {
+      return this.booking.bookedSeats.join(", ");
     }
   },
   created: function() {
     this.createSeats();
+    console.log(this.seats);
   }
 };
 </script>
@@ -214,6 +249,10 @@ export default {
   background-size: cover;
 }
 
+#header {
+  margin-bottom: 10px;
+}
+
 #seatMap {
   margin: auto;
 }
@@ -222,35 +261,8 @@ export default {
   min-width: 20px;
 }
 
-.checkbox {
-  display: inline-flex;
-  cursor: pointer;
-  position: relative;
-}
-
-.checkbox > input {
-  height: 25px;
-  width: 25px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  -o-appearance: none;
-  appearance: none;
-  border: 1px solid #000000;
-  border-radius: 4px;
-  outline: none;
-  transition-duration: 0.3s;
-  background-color: #ffffff;
-  cursor: pointer;
-}
-
-.seatTaken > input {
-  background-color: #ff0000;
-  cursor: not-allowed;
-}
-
-.seatSelected > input {
-  background-color: rgb(113, 226, 0);
-  border: 2px solid #555555;
+#bookingTable > tr > th {
+  min-width: 130px;
 }
 
 .form-container {
@@ -269,8 +281,7 @@ export default {
 }
 
 #bookingTable {
-  margin-left: auto;
-  margin-right: auto;
+  margin: auto;
 }
 
 .btn {
@@ -279,11 +290,13 @@ export default {
   padding: 1%;
   border-radius: 30px;
   border: 0px;
-  margin: 1px;
+  margin: 1px 1px 5px 1px;
 }
+
 .btn:hover {
   background-color: rgb(73, 150, 201);
 }
+
 .btn2 {
   color: rgb(255, 255, 255);
   background-color: #6bd600;
@@ -292,6 +305,7 @@ export default {
   border: 0px;
   margin: 1px;
 }
+
 .btn2:hover {
   background-color: rgb(113, 226, 0);
 }
