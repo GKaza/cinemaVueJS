@@ -1,7 +1,7 @@
 # cinemaBooking
 
 Basic functionality preview:
-<img src="https://imgflip.com/gif/451a1f">
+<img src="https://imgflip.com/embed/451a1f">
 
 # Seat Booking application
 
