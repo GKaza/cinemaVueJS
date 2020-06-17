@@ -323,6 +323,7 @@ export default {
   border-radius: 30px;
   border: 0px;
   margin: 1px 1px 5px 1px;
+  outline: 0px;
 }
 
 .btn:hover {
@@ -337,6 +338,7 @@ export default {
   border-radius: 30px;
   border: 0px;
   margin: 1px 10px;
+  outline: 0px;
 }
 
 .btn2:hover {
@@ -357,6 +359,7 @@ export default {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
+  outline: 0px;
 }
 
 .btn3:hover {
