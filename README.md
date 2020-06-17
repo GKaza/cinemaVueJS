@@ -4,6 +4,8 @@ Basic functionality preview:
 
 <a href="https://imgflip.com/gif/451a1f"><img src="https://i.imgflip.com/451a1f.gif"></a>
 
+The application can also be checked [here](https://cinemavue-92ba0.web.app/).
+
 # Seat Booking application
 
 The seats are displayed visually so users understand where they will be watching from when picking seats. We will call this the seat map.
