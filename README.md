@@ -1,4 +1,4 @@
-# cinemaBooking
+# cinemaVueJS
 
 Basic functionality preview:
 
